@@ -42,6 +42,7 @@ RUN poetry install --without dev
 ENV PORT=5000
 ENV LISTEN_HOST=0.0.0.0
 ENV DEBUG=docker-appdatur
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5000
 

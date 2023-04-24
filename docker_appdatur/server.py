@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 import asyncio
+import logging
 import os
 import signal
-import logging
+import sys
 from typing import Any
 
 import tornado  # type: ignore
@@ -100,7 +101,8 @@ class Server:
 if __name__ == "__main__":
     server = Server()
     loop = asyncio.get_event_loop()
-    logging.basicConfig(level=logging.DEBUG)
+    LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
+    logging.basicConfig(level=LOGLEVEL, handlers=[logging.StreamHandler(sys.stdout)])
     for signame in ("SIGINT", "SIGTERM"):
         loop.add_signal_handler(
             getattr(signal, signame),

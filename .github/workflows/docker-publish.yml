@@ -52,5 +52,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           #todo, deleteme once iterating less
-          cache-from: "type=registry,ref=${{ steps.meta.outputs.tags }}"
+          cache-from: "type=registry,ref=johhenkens/docker-appdatur:main"
           cache-to: type=inline

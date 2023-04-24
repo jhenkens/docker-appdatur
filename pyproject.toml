@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "docker-appdatur"
+version = "0.1.0"
+description = ""
+authors = ["Johan Henkens <johan@henkens.com>"]
+readme = "README.md"
+packages = [{include = "docker_appdatur"}]
+
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+tornado = "^6.3.1"
+
+[tool.poetry.dev-dependencies]
+black = "^23.3.0"
+pre-commit = "^3.2.2"
+mypy = "^1.2.0"
+pylint = "^2.17.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[mypy]
+disallow-untyped-defs = true
+disallow-incomplete-calls = true
+disallow-untyped-calls = true
+
+[tool.pylint]
+max-line-length = 120
+disable = [
+    "C0114",
+    "C0115",
+    "C0116",
+    "W0223", # abstract method override
+    "W0201", # defined outside init
+    "R0903"
+]

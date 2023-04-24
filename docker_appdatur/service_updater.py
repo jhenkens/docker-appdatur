@@ -70,12 +70,19 @@ class ServiceUpdater:
             self.run_scripts("after_pull.sh")
 
     def run_scripts(self, script_name: str) -> None:
+        logging.debug("Looking for %s(server_path)", {"server_path": self.server_path})
         if self.server_path:
-            for service_dir in os.listdir(self.server_path):
-                if service_dir.startswith(".") or not os.path.isdir(service_dir):
+            for service_dir_str in os.listdir(self.server_path):
+                logging.debug(
+                    "Looking in %s(service_dir)", {"service_dir": service_dir_str}
+                )
+                service_dir = Path(service_dir_str)
+                if service_dir.name.startswith(".") or not os.path.isdir(service_dir):
                     continue
-                script_path = str(Path(service_dir) / script_name)
-                if not os.path.isfile(script_path):
+                script_path = service_dir / script_name
+                if not script_path.is_file():
                     continue
-                logging.info("Running %(script_path)s", {"script_path": script_path})
-                self._run([script_path], cwd=service_dir)
+                logging.info(
+                    "Running %(script_path)s", {"script_path": str(script_path)}
+                )
+                self._run([str(script_path)], cwd=str(service_dir))

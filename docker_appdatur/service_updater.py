@@ -79,10 +79,10 @@ class ServiceUpdater:
         )
         if self.server_path:
             for service_dir_str in os.listdir(self.server_path):
-                logging.debug(
-                    "Looking in %(service_dir)s", {"service_dir": service_dir_str}
-                )
                 service_dir = self.server_path / service_dir_str
+                logging.debug(
+                    "Looking in %(service_dir)s", {"service_dir": service_dir}
+                )
                 if service_dir.name.startswith(".") or not os.path.isdir(service_dir):
                     continue
 

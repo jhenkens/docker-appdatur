@@ -1,5 +1,4 @@
-#! /bin/sh
-set -e
+#! /bin/sh -e
 
 mkdir -p /root/.ssh
 ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts 2> /dev/null

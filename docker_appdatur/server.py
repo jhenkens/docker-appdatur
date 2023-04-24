@@ -2,6 +2,7 @@
 import asyncio
 import os
 import signal
+import logging
 from typing import Any
 
 import tornado  # type: ignore
@@ -78,6 +79,7 @@ class Server:
         self.event = asyncio.Event()
 
     async def run(self) -> None:
+        logging.info("Started!")
         self.server.listen(self.server_port)
         try:
             await self.event.wait()
@@ -85,7 +87,7 @@ class Server:
             await self.stop("CancelledError")
 
     async def stop(self, signame: str) -> None:  # pylint: disable=redefined-outer-name
-        print(f"Received {signame}... Shutting down...")
+        logging.info("Received %(signame)s... Shutting down...", {"signame": signame})
         self.server.stop()
         await asyncio.wait_for(self.server.close_all_connections(), timeout=5)
         self.event.set()
@@ -94,6 +96,7 @@ class Server:
 if __name__ == "__main__":
     server = Server()
     loop = asyncio.get_event_loop()
+    logging.basicConfig(level=logging.INFO)
     for signame in ("SIGINT", "SIGTERM"):
         loop.add_signal_handler(
             getattr(signal, signame),

@@ -29,10 +29,11 @@ RUN apk add --no-cache \
 
 
 WORKDIR /usr/src/app
-COPY pyproject.toml poetry.lock README.md .
+COPY pyproject.toml poetry.lock README.md docker_entrypoint.sh .
 RUN poetry config virtualenvs.create false && \
     poetry install --without dev --no-root
 
+# COPY docker_appdatur ./docker_appdatur
 COPY docker_appdatur ./docker_appdatur
 
 # Install again after copying files
@@ -44,5 +45,5 @@ ENV DEBUG=docker-appdatur
 
 EXPOSE 5000
 
-ENTRYPOINT ["python3", "docker_appdatur/server.py"]
+ENTRYPOINT ["./docker_entrypoint.sh"]
 CMD []

@@ -28,6 +28,10 @@ class WebhookHandler(tornado.web.RequestHandler):
         self.token_validator = token_validator
         self.service_updater = service_updater
 
+    # Test method
+    async def get(self) -> None:
+        self.service_updater.pull()
+
     async def post(self) -> None:
         try:
             self.token_validator.verify_signature(
@@ -96,7 +100,7 @@ class Server:
 if __name__ == "__main__":
     server = Server()
     loop = asyncio.get_event_loop()
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     for signame in ("SIGINT", "SIGTERM"):
         loop.add_signal_handler(
             getattr(signal, signame),

@@ -1,7 +1,8 @@
+import logging
 import os
-from pathlib import Path
-import sys
 import subprocess
+import sys
+from pathlib import Path
 from typing import List, Optional
 
 
@@ -20,11 +21,14 @@ class ServiceUpdater:
         if repo_dest and server_name:
             self.server_path = str(Path(repo_dest) / server_name)
 
-        if repo_dest and repo_url and bootstrap and not os.path.exists(repo_dest):
-            self.clone()
+        if bootstrap:
+            self.bootstrap()
         self.pull()
 
     def _run(self, cmd: List[str], cwd: Optional[str] = None) -> None:
+        logging.debug(
+            "Executing '%(cmd)s' in cwd='%(cwd)s'", {"cmd": " ".join(cmd), "cwd": cwd}
+        )
         subprocess.run(
             cmd,
             cwd=cwd,
@@ -32,15 +36,33 @@ class ServiceUpdater:
             stderr=sys.stderr,
             check=True,
         )
+        logging.debug(
+            "Completed '%(cmd)s' in cwd='%(cwd)s'", {"cmd": " ".join(cmd), "cwd": cwd}
+        )
+
+    def bootstrap(self) -> None:
+        logging.info(
+            "Bootstrapping %(repo_dest)s",
+            {"repo_url": self.repo_url, "repo_dest": self.repo_dest},
+        )
+        self.clone()
 
     def clone(self) -> None:
         if self.repo_dest and self.repo_url and not os.path.exists(self.repo_dest):
+            logging.info(
+                "Pulling %(repo_url)s to %(repo_dest)s",
+                {"repo_url": self.repo_url, "repo_dest": self.repo_dest},
+            )
             self._run(
                 ["git", "clone", self.repo_url, self.repo_dest],
             )
 
     def pull(self) -> None:
         if self.repo_dest:
+            logging.info(
+                "Pulling %(repo_dest)s",
+                {"repo_dest": self.repo_dest},
+            )
             self._run(
                 ["git", "pull", "--ff-only"],
                 cwd=self.repo_dest,
@@ -55,4 +77,5 @@ class ServiceUpdater:
                 script_path = str(Path(service_dir) / script_name)
                 if not os.path.isfile(script_path):
                     continue
+                logging.info("Running %(script_path)s", {"script_path": script_path})
                 self._run([script_path], cwd=service_dir)

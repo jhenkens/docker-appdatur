@@ -99,10 +99,14 @@ class Server:
 
 
 if __name__ == "__main__":
-    server = Server()
-    loop = asyncio.get_event_loop()
     LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
-    logging.basicConfig(level=LOGLEVEL, handlers=[logging.StreamHandler(sys.stdout)])
+    logging.basicConfig(
+        level=logging.DEBUG, handlers=[logging.StreamHandler(sys.stdout)]
+    )
+
+    server = Server()
+
+    loop = asyncio.get_event_loop()
     for signame in ("SIGINT", "SIGTERM"):
         loop.add_signal_handler(
             getattr(signal, signame),

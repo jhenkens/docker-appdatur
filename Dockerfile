@@ -27,11 +27,11 @@ RUN apk add --no-cache \
 
 
 WORKDIR /usr/src/app
-COPY pyproject.toml poetry.lock .
+COPY pyproject.toml poetry.lock README.md .
 RUN poetry config virtualenvs.create false && \
     poetry install --without dev --no-root
 
-COPY . .
+COPY docker_appdatur ./docker_appdatur
 
 # Install again after copying files
 RUN poetry install --without dev

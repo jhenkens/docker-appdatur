@@ -6,7 +6,9 @@ FROM python:3.11-alpine
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/
 
 RUN apk add --no-cache --update \
-    git
+    git \
+    openssh
+
 
 RUN apk add --no-cache \
         curl \

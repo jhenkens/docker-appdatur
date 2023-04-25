@@ -122,4 +122,8 @@ class ServiceUpdater:
                 logging.debug(
                     "Compose up on %(compose_file)s", {"compose_file": compose_file}
                 )
-                self._compose("docker-appdatur-or-unraid", compose_file, ["up", "-d"])
+                self._compose(
+                    "docker-appdatur-or-unraid",
+                    compose_file,
+                    ["up", "-d", "--remove-orphans"],
+                )

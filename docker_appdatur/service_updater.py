@@ -71,6 +71,7 @@ class ServiceUpdater:
                 cwd=self.repo_dest,
             )
             self.run_scripts("after_pull.sh")
+            self.compose_pull_up()
 
     def run_scripts(self, script_name: str) -> None:
         logging.debug(
@@ -96,3 +97,29 @@ class ServiceUpdater:
                 )
 
                 self._run([str(script_path)], cwd=str(service_dir))
+
+    def _compose(
+        self, project_name: str, compose_file: Path, args: List[Union[str, Path]]
+    ) -> None:
+        combined_args: List[Union[str, Path]] = [
+            "docker-compose",
+            "--project-name",
+            project_name,
+            "--file",
+            compose_file,
+        ]
+        combined_args = combined_args + args
+        self._run(combined_args, cwd=compose_file.parent)
+
+    def compose_pull_up(self) -> None:
+        if self.repo_dest:
+            compose_file = self.repo_dest / "docker-compose.yaml"
+            if compose_file.exists():
+                logging.debug(
+                    "Compose pull on %(compose_file)s", {"compose_file": compose_file}
+                )
+                self._compose("docker-appdatur-or-unraid", compose_file, ["pull"])
+                logging.debug(
+                    "Compose up on %(compose_file)s", {"compose_file": compose_file}
+                )
+                self._compose("docker-appdatur-or-unraid", compose_file, ["up", "-d"])

@@ -8,8 +8,10 @@ COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/docker-compose /usr
 RUN apk add --no-cache --update \
     bash \
     git \
-    openssh
-
+    openssh \
+    su-exec \
+    shadow && \
+    useradd -u 911 -U -d /config -s /bin/false abc && usermod -G users abc
 
 RUN apk add --no-cache \
         curl \

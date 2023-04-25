@@ -7,10 +7,16 @@ groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
 
-mkdir -p /root/.ssh
-ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts 2> /dev/null
-if ! [ -z "$SSH_PRIVATE_KEY" ]; then
-    echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+SSH_CONFIG="/config/.ssh"
+SSH_KNOWN_HOSTS="$SSH_CONFIG/known_hosts"
+
+if ! [ -f "$SSH_KNOWN_HOSTS" ]; then
+    mkdir -p "$SSH_CONFIG"
+    ssh-keyscan -t rsa github.com >> "$SSH_KNOWN_HOSTS" 2> /dev/null
+    chmod 600 "$SSH_KNOWN_HOSTS"
+    chmod 700 "$SSH_CONFIG"
+    chown abc:$PGID "$SSH_KNOWN_HOSTS"
+    chown abc:$PGID "$SSH_CONFIG"
 fi
 
 # Use exec to replace entrypoint with python3 as PID1

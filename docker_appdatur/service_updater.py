@@ -16,6 +16,7 @@ class ServiceUpdater:
         repo_dest: Optional[str],
         bootstrap: bool,
         pull_on_start: bool,
+        docker_compose_pull: bool,
     ) -> None:
         self.server_name = server_name
         self.service_name = service_name
@@ -29,6 +30,7 @@ class ServiceUpdater:
             elif server_name:
                 self.server_path = self.repo_dest / server_name
 
+        self.docker_compose_pull = docker_compose_pull
         if bootstrap:
             self.bootstrap()
         if bootstrap or pull_on_start:
@@ -122,10 +124,13 @@ class ServiceUpdater:
         if self.repo_dest and self.server_path:
             compose_file = self.server_path / "docker-compose" / "docker-compose.yaml"
             if compose_file.exists():
-                logging.debug(
-                    "Compose pull on %(compose_file)s", {"compose_file": compose_file}
-                )
-                self._compose(compose_file, ["pull"])
+                if self.docker_compose_pull:
+                    logging.debug(
+                        "Compose pull on %(compose_file)s",
+                        {"compose_file": compose_file},
+                    )
+                    self._compose(compose_file, ["pull"])
+
                 if self.service_name:
                     logging.debug(
                         "Compose up on %(service_name)s @ %(compose_file)s",

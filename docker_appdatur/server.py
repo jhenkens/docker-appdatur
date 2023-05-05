@@ -71,6 +71,7 @@ class Server:
         repo_dest = os.getenv("REPO_DEST")
         bootstrap = os.getenv("REPO_BOOTSTRAP", "False").lower() == "true"
         pull_on_start = os.getenv("PULL_ON_START", "False").lower() == "true"
+        docker_compose_pull = os.getenv("COMPOSE_PULL", "False").lower() == "true"
         service_updater = ServiceUpdater(
             server_name,
             server_repo_path,
@@ -79,6 +80,7 @@ class Server:
             repo_dest,
             bootstrap,
             pull_on_start,
+            docker_compose_pull,
         )
         application = tornado.web.Application(
             [

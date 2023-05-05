@@ -7,23 +7,32 @@ from typing import List, Optional, Union
 
 
 class ServiceUpdater:
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         server_name: Optional[str],
+        server_repo_path: Optional[str],
+        service_name: Optional[str],
         repo_url: Optional[str],
         repo_dest: Optional[str],
         bootstrap: bool,
+        pull_on_start: bool,
     ) -> None:
         self.server_name = server_name
+        self.service_name = service_name
         self.repo_url = repo_url
-        self.repo_dest = Path(repo_dest) if repo_dest else None
-        self.server_path = (
-            (self.repo_dest / server_name) if self.repo_dest and server_name else None
-        )
+        self.repo_dest = None
+        self.server_path = None
+        if repo_dest:
+            self.repo_dest = Path(repo_dest)
+            if server_repo_path:
+                self.server_path = self.repo_dest / server_repo_path
+            elif server_name:
+                self.server_path = self.repo_dest / server_name
 
         if bootstrap:
             self.bootstrap()
-        self.pull()
+        if bootstrap or pull_on_start:
+            self.pull()
 
     def _run(
         self, cmd: List[Union[str, Path]], cwd: Optional[Union[str, Path]] = None
@@ -98,13 +107,11 @@ class ServiceUpdater:
 
                 self._run([str(script_path)], cwd=str(service_dir))
 
-    def _compose(
-        self, project_name: str, compose_file: Path, args: List[Union[str, Path]]
-    ) -> None:
+    def _compose(self, compose_file: Path, args: List[Union[str, Path]]) -> None:
         combined_args: List[Union[str, Path]] = [
             "docker-compose",
             "--project-name",
-            project_name,
+            f"docker-appdatur-{self.server_name}",
             "--file",
             compose_file,
         ]
@@ -112,18 +119,27 @@ class ServiceUpdater:
         self._run(combined_args, cwd=compose_file.parent)
 
     def compose_pull_up(self) -> None:
-        if self.repo_dest:
-            compose_file = self.repo_dest / "docker-compose.yaml"
+        if self.repo_dest and self.server_path:
+            compose_file = self.server_path / "docker-compose" / "docker-compose.yaml"
             if compose_file.exists():
                 logging.debug(
                     "Compose pull on %(compose_file)s", {"compose_file": compose_file}
                 )
-                self._compose("docker-appdatur-or-unraid", compose_file, ["pull"])
+                self._compose(compose_file, ["pull"])
+                if self.service_name:
+                    logging.debug(
+                        "Compose up on %(service_name)s @ %(compose_file)s",
+                        {
+                            "service_name": self.service_name,
+                            "compose_file": compose_file,
+                        },
+                    )
+                    self._compose(compose_file, ["up", "-d", self.service_name])
+
                 logging.debug(
                     "Compose up on %(compose_file)s", {"compose_file": compose_file}
                 )
                 self._compose(
-                    "docker-appdatur-or-unraid",
                     compose_file,
                     ["up", "-d", "--remove-orphans"],
                 )

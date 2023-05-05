@@ -41,6 +41,7 @@ class WebhookHandler(tornado.web.RequestHandler):
             )
         except ValueError as value_error:
             raise HTTPError(403) from value_error
+        self.service_updater.pull()
         self.write("Good work!")
 
 
@@ -64,10 +65,21 @@ class Server:
             "token_validator": GithubTokenValidater(secret_token)
         }
         server_name = os.getenv("SERVER_NAME")
+        server_repo_path = os.getenv("SERVER_REPO_PATH")
+        service_name = os.getenv("APPDATUR_SERVICE_NAME")
         repo_url = os.getenv("REPO_URL")
         repo_dest = os.getenv("REPO_DEST")
         bootstrap = os.getenv("REPO_BOOTSTRAP", "False").lower() == "true"
-        service_updater = ServiceUpdater(server_name, repo_url, repo_dest, bootstrap)
+        pull_on_start = os.getenv("PULL_ON_START", "False").lower() == "true"
+        service_updater = ServiceUpdater(
+            server_name,
+            server_repo_path,
+            service_name,
+            repo_url,
+            repo_dest,
+            bootstrap,
+            pull_on_start,
+        )
         application = tornado.web.Application(
             [
                 (r"/", MainHandler),

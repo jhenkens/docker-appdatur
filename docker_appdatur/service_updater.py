@@ -87,7 +87,7 @@ class ServiceUpdater:
             "Looking for %(script_name)s in %(server_path)s",
             {"server_path": self.server_path, "script_name": script_name},
         )
-        if self.server_path:
+        if self.server_path and self.server_path.exists():
             for service_dir_str in os.listdir(self.server_path):
                 service_dir = self.server_path / service_dir_str
                 logging.debug(

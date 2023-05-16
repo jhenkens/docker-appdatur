@@ -29,10 +29,6 @@ class ServiceUpdater:
         self.server_path = self.repo_dest / server_repo_path
 
         self.docker_compose_pull = docker_compose_pull
-        if bootstrap:
-            self.bootstrap()
-        if bootstrap or pull_on_start:
-            self.pull()
 
         self.compose_file = self.server_path / "docker-compose" / compose_file_name
         self.bootstrap_compose_file = None
@@ -44,6 +40,11 @@ class ServiceUpdater:
         self.bootstrap_compose_project_name = (
             f"docker-appdatur-{self.server_name}-bootstrap"
         )
+
+        if bootstrap:
+            self.bootstrap()
+        if bootstrap or pull_on_start:
+            self.pull()
 
     def _run(
         self,

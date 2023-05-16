@@ -1,5 +1,5 @@
 FROM docker as dind
-ARG DOCKER_COMPOSE_VERSION=2.18.0
+ARG DOCKER_COMPOSE_VERSION=v2.18.0
 
 FROM python:3.11-alpine
 
@@ -24,7 +24,8 @@ RUN apk add --no-cache \
     DOCKER_CONFIG=/root/.docker && mkdir -p "${DOCKER_CONFIG}/cli-plugins" && \
     APK_ARCH=`apk --print-arch` && \
     DOCKER_COMPOSE_URL="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${APK_ARCH}" && \
-    curl -SL "${DOCKER_COMPOSE_URL}" -o "${DOCKER_CONFIG}/cli-plugins/docker-compose" && \
+    echo "Downloading $DOCKER_COMPOSE_URL" && \
+    wget -q -O "${DOCKER_CONFIG}/cli-plugins/docker-compose" "${DOCKER_COMPOSE_URL}" && \
     chmod +x "${DOCKER_CONFIG}/cli-plugins/docker-compose" && \
     apk del \
         curl \

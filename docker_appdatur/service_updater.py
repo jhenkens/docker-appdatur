@@ -142,17 +142,17 @@ class ServiceUpdater:
     ) -> subprocess.CompletedProcess[bytes]:
         if project_name is None:
             project_name = self.compose_project_name
-        combined_args: List[Union[str, Path]] = [
-            "docker",
-            "compose",
+        combined_args: List[Union[str, Path]] = []
+        combined_args += self.docker_compose_bin
+        combined_args += [
             "--project-name",
             project_name,
             "--file",
             compose_file,
         ]
         if dry_run:
-            combined_args = combined_args + ["--dry-run", "--"]
-        combined_args = combined_args + args
+            combined_args += ["--dry-run", "--"]
+        combined_args += args
         return self._run(combined_args, cwd=compose_file.parent, capture_output=dry_run)
 
     def bootstrap_compose_down(self) -> None:

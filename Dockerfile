@@ -1,9 +1,9 @@
 FROM docker as dind
-
+ARG DOCKER_COMPOSE_VERSION=2.18.0
 
 FROM python:3.11-alpine
 
-COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 
 RUN apk add --no-cache --update \
     bash \
@@ -19,10 +19,13 @@ RUN apk add --no-cache \
         libressl-dev \
         musl-dev \
         libffi-dev && \
-    # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal && \
-    # source $HOME/.cargo/env && \
     pip3 install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
+    DOCKER_CONFIG=/root/.docker && mkdir -p "${DOCKER_CONFIG}/cli-plugins" && \
+    APK_ARCH=`apk --print-arch` && \
+    DOCKER_COMPOSE_URL="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${APK_ARCH}" && \
+    curl -SL "${DOCKER_COMPOSE_URL}" -o "${DOCKER_CONFIG}/cli-plugins/docker-compose" && \
+    chmod +x "${DOCKER_CONFIG}/cli-plugins/docker-compose" && \
     apk del \
         curl \
         gcc \

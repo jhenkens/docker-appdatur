@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "docker-appdatur"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Johan Henkens <johan@henkens.com>"]
 readme = "README.md"
@@ -36,5 +36,7 @@ disable = [
     "C0116",
     "W0223", # abstract method override
     "W0201", # defined outside init
-    "R0903"
+    "R0903",
+    "R0914", # too-many-locals
+    "R0902", # too-many-instance-attributes
 ]

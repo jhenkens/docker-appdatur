@@ -64,23 +64,27 @@ class Server:
         token_validator: dict[str, Any] = {
             "token_validator": GithubTokenValidater(secret_token)
         }
-        server_name = os.getenv("SERVER_NAME")
-        server_repo_path = os.getenv("SERVER_REPO_PATH")
-        service_name = os.getenv("APPDATUR_SERVICE_NAME")
-        repo_url = os.getenv("REPO_URL")
-        repo_dest = os.getenv("REPO_DEST")
+        server_name = os.environ["SERVER_NAME"]
+        server_repo_path = os.environ["SERVER_REPO_PATH"]
+        service_name = os.environ["APPDATUR_SERVICE_NAME"]
+        compose_file_name = os.environ["COMPOSE_FILE_NAME"]
+        repo_url = os.environ["REPO_URL"]
+        repo_dest = os.environ["REPO_DEST"]
         bootstrap = os.getenv("REPO_BOOTSTRAP", "False").lower() == "true"
         pull_on_start = os.getenv("PULL_ON_START", "False").lower() == "true"
         docker_compose_pull = os.getenv("COMPOSE_PULL", "False").lower() == "true"
+        bootstrap_compose_file_name = os.getenv("BOOTSTRAP_COMPOSE_FILE_NAME")
         service_updater = ServiceUpdater(
             server_name,
             server_repo_path,
             service_name,
+            compose_file_name,
             repo_url,
             repo_dest,
             bootstrap,
             pull_on_start,
             docker_compose_pull,
+            bootstrap_compose_file_name,
         )
         application = tornado.web.Application(
             [

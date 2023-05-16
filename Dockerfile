@@ -1,7 +1,8 @@
 FROM docker as dind
-ARG DOCKER_COMPOSE_VERSION=v2.18.0
 
 FROM python:3.11-alpine
+
+ARG DOCKER_COMPOSE_VERSION=v2.18.0
 
 COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
 

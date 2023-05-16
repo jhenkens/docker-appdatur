@@ -22,12 +22,12 @@ RUN apk add --no-cache \
         libffi-dev && \
     pip3 install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
-    DOCKER_CONFIG=/root/.docker && mkdir -p "${DOCKER_CONFIG}/cli-plugins" && \
+    DOCKER_LIB=/usr/local/lib/docker/cli-plugins && mkdir -p "${DOCKER_LIB}" && \
     APK_ARCH=`apk --print-arch` && \
     DOCKER_COMPOSE_URL="https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${APK_ARCH}" && \
     echo "Downloading $DOCKER_COMPOSE_URL" && \
-    wget -q -O "${DOCKER_CONFIG}/cli-plugins/docker-compose" "${DOCKER_COMPOSE_URL}" && \
-    chmod +x "${DOCKER_CONFIG}/cli-plugins/docker-compose" && \
+    wget -q -O "${DOCKER_LIB}/docker-compose" "${DOCKER_COMPOSE_URL}" && \
+    chmod +x "${DOCKER_LIB}/docker-compose" && \
     apk del \
         curl \
         gcc \
@@ -51,7 +51,6 @@ ENV PORT=5000
 ENV LISTEN_HOST=0.0.0.0
 ENV DEBUG=docker-appdatur
 ENV PYTHONUNBUFFERED=1
-ENV DOCKER_COMPOSE_BIN=/root/.docker/cli-plugins/docker-compose
 
 ENV REPO_URL=
 ENV REPO_DEST=

@@ -41,10 +41,6 @@ class ServiceUpdater:
             f"docker-appdatur-{self.server_name}-bootstrap"
         )
 
-        self.docker_compose_bin = os.getenv(
-            "DOCKER_COMPOSE_BIN", "docker compose"
-        ).split(" ")
-
         if bootstrap:
             self.bootstrap()
         if bootstrap or pull_on_start:
@@ -142,8 +138,7 @@ class ServiceUpdater:
     ) -> subprocess.CompletedProcess[bytes]:
         if project_name is None:
             project_name = self.compose_project_name
-        combined_args: List[Union[str, Path]] = []
-        combined_args += self.docker_compose_bin
+        combined_args: List[Union[str, Path]] = ["docker", "compose"]
         combined_args += [
             "--project-name",
             project_name,

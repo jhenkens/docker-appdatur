@@ -41,6 +41,10 @@ class ServiceUpdater:
             f"docker-appdatur-{self.server_name}-bootstrap"
         )
 
+        self.docker_compose_bin = os.getenv(
+            "DOCKER_COMPOSE_BIN", "docker compose"
+        ).split(" ")
+
         if bootstrap:
             self.bootstrap()
         if bootstrap or pull_on_start:

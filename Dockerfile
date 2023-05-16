@@ -51,6 +51,7 @@ ENV PORT=5000
 ENV LISTEN_HOST=0.0.0.0
 ENV DEBUG=docker-appdatur
 ENV PYTHONUNBUFFERED=1
+ENV DOCKER_COMPOSE_BIN=/root/.docker/cli-plugins/docker-compose
 
 ENV REPO_URL=
 ENV REPO_DEST=

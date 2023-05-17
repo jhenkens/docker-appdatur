@@ -6,6 +6,8 @@ PGID=${PGID:-911}
 groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
+mkdir -p /config/.docker
+chown -R abc:$PGID /config
 
 SSH_CONFIG="/config/.ssh"
 SSH_KNOWN_HOSTS="$SSH_CONFIG/known_hosts"

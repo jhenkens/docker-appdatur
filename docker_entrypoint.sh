@@ -7,7 +7,8 @@ groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
 mkdir -p /config/.docker
-chown -R abc:$PGID /config
+chown abc:$PGID /config
+chown abc:$PGID /config/.docker
 
 SSH_CONFIG="/config/.ssh"
 SSH_KNOWN_HOSTS="$SSH_CONFIG/known_hosts"

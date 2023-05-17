@@ -57,16 +57,16 @@ class ServiceUpdater:
         logging.debug(
             "Executing '%(cmd)s' in cwd='%(cwd)s'", {"cmd": " ".join(_cmd), "cwd": cwd}
         )
-        stdout: None | IO = sys.stdout
-        stderr: None | IO = sys.stderr
+        stdout: int | IO = sys.stdout
+        stderr: int | IO = sys.stderr
         if capture_output:
-            stdout, stderr = (None, None)
+            stdout = subprocess.PIPE
+            stderr = subprocess.STDOUT
         result = subprocess.run(
             cmd,
             cwd=cwd,
             stdout=stdout,
             stderr=stderr,
-            capture_output=capture_output,
             check=check,
         )
         logging.debug(

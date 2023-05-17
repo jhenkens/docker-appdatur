@@ -129,12 +129,13 @@ class ServiceUpdater:
 
                 self._run([str(script_path)], cwd=str(service_dir))
 
-    def _compose(
+    def _compose(  # pylint: disable=too-many-arguments
         self,
         compose_file: Path,
         args: List[Union[str, Path]],
         project_name: Optional[str] = None,
         dry_run: bool = False,
+        capture_output: bool = False,
     ) -> subprocess.CompletedProcess[bytes]:
         if project_name is None:
             project_name = self.compose_project_name
@@ -148,7 +149,9 @@ class ServiceUpdater:
         if dry_run:
             combined_args += ["--dry-run"]
         combined_args += args
-        return self._run(combined_args, cwd=compose_file.parent, capture_output=dry_run)
+        return self._run(
+            combined_args, cwd=compose_file.parent, capture_output=capture_output
+        )
 
     def bootstrap_compose_down(self) -> None:
         if self.bootstrap_compose_file and self.bootstrap_compose_file.exists():
@@ -162,7 +165,11 @@ class ServiceUpdater:
     def changes_for_self(self, self_service_name: str, compose_file: Path) -> bool:
         logging.debug("Dry run compose for self")
         compose_self_args: list[Union[str, Path]] = ["up", "-d", self_service_name]
-        dry_run = self._compose(compose_file, compose_self_args, dry_run=True)
+        # Run twice, so we get stremaing output the first time
+        self._compose(compose_file, compose_self_args, dry_run=True)
+        dry_run = self._compose(
+            compose_file, compose_self_args, dry_run=True, capture_output=True
+        )
         output = dry_run.stdout.decode("utf-8")
         logging.debug(
             "Dry run output: \n%(dry_run_output)s", {"dry_run_output": output}

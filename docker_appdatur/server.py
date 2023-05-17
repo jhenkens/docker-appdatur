@@ -66,7 +66,7 @@ class Server:
         }
         server_name = os.environ["SERVER_NAME"]
         server_repo_path = os.environ["SERVER_REPO_PATH"]
-        service_name = os.environ["APPDATUR_SERVICE_NAME"]
+        service_name = os.getenv("APPDATUR_SERVICE_NAME", None)
         compose_file_name = os.environ["COMPOSE_FILE_NAME"]
         repo_url = os.environ["REPO_URL"]
         repo_dest = os.environ["REPO_DEST"]

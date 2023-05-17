@@ -11,7 +11,7 @@ class ServiceUpdater:
         self,
         server_name: str,
         server_repo_path: str,
-        service_name: str,
+        service_name: Optional[str],
         compose_file_name: str,
         repo_url: str,
         repo_dest: str,
@@ -159,16 +159,16 @@ class ServiceUpdater:
                 project_name=self.bootstrap_compose_project_name,
             )
 
-    def changes_for_self(self, compose_file: Path) -> bool:
+    def changes_for_self(self, self_service_name: str, compose_file: Path) -> bool:
         logging.debug("Dry run compose for self")
-        compose_self_args: list[Union[str, Path]] = ["up", "-d", self.service_name]
+        compose_self_args: list[Union[str, Path]] = ["up", "-d", self_service_name]
         dry_run = self._compose(compose_file, compose_self_args, dry_run=True)
         output = dry_run.stdout.decode("utf-8")
         logging.debug(
             "Dry run output: \n%(dry_run_output)s", {"dry_run_output": output}
         )
         output = [
-            x for x in output.split("\n") if f"Container {self.service_name}" in x
+            x for x in output.split("\n") if f"Container {self_service_name}" in x
         ][0]
         return not "Running" in output
 
@@ -181,7 +181,7 @@ class ServiceUpdater:
                 project_name=self.bootstrap_compose_project_name,
             )
 
-    def broken_self_update(self) -> None:
+    def broken_self_update(self, self_service_name: str) -> None:
         compose_file = self.compose_file
         logging.debug(
             "We need to update ourself, but we are going to cause the stack to go down. Please manually intervene"
@@ -189,11 +189,11 @@ class ServiceUpdater:
         logging.debug(
             "Compose up on %(service_name)s @ %(compose_file)s",
             {
-                "service_name": self.service_name,
+                "service_name": self_service_name,
                 "compose_file": compose_file,
             },
         )
-        compose_self_args: list[Union[str, Path]] = ["up", "-d", self.service_name]
+        compose_self_args: list[Union[str, Path]] = ["up", "-d", self_service_name]
         self._compose(compose_file, compose_self_args)
 
     def compose_pull_up(self) -> None:
@@ -209,14 +209,14 @@ class ServiceUpdater:
                 self._compose(compose_file, ["pull"])
 
             if self.service_name:
-                if self.changes_for_self(compose_file):
+                if self.changes_for_self(self.service_name, compose_file):
                     logging.debug("Going to update %(service_name).")
                     if self.bootstrap_compose_file:  # pylint: disable=no-else-return
                         self._compose(compose_file, ["pull", self.service_name])
                         self.bootstrap_self_update()
                         return  # fast - exit
                     else:
-                        self.broken_self_update()
+                        self.broken_self_update(self.service_name)
 
             logging.debug(
                 "Compose up on %(compose_file)s", {"compose_file": compose_file}

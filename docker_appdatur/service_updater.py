@@ -146,7 +146,7 @@ class ServiceUpdater:
             compose_file,
         ]
         if dry_run:
-            combined_args += ["--dry-run", "--"]
+            combined_args += ["--dry-run"]
         combined_args += args
         return self._run(combined_args, cwd=compose_file.parent, capture_output=dry_run)
 

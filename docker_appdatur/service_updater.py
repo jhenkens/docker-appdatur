@@ -217,7 +217,10 @@ class ServiceUpdater:
 
             if self.service_name:
                 if self.changes_for_self(self.service_name, compose_file):
-                    logging.debug("Going to update %(service_name).")
+                    logging.debug(
+                        "Going to update %(service_name)s.",
+                        {"service_name": self.service_name},
+                    )
                     if self.bootstrap_compose_file:  # pylint: disable=no-else-return
                         self._compose(compose_file, ["pull", self.service_name])
                         self.bootstrap_self_update()

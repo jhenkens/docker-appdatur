@@ -233,5 +233,5 @@ class ServiceUpdater:
             )
             self._compose(
                 compose_file,
-                ["up", "-d", "--remove-orphans"],
+                ["up", "-d", "--remove-orphans", "--build"],
             )
